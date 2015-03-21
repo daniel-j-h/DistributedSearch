@@ -15,10 +15,16 @@ See:
 * https://www.youtube.com/watch?v=f6kdp27TYZs
 
 
-## Usage
+## Requirements:
 
-    aptitude install TODO
-    make
+* nanomsg for communication: https://github.com/nanomsg/nanomsg
+* bond for serialization: https://github.com/Microsoft/bond
+
+
+## Usage:
+
+Start multiple services, such as WebSearch, ImageSearch, VideoSearch.
+Now issue queries against the Search service, which dispatches the query and gathers results.
 
 
 ## License

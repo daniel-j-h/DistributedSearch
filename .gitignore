@@ -1,5 +1,12 @@
+Search
+WebSearch
+ImageSearch
+VideoSearch
+
 *.o
 .*.swp
+
+env
 
 perf.data
 perf.data.old
