@@ -1,25 +1,20 @@
-#include <locale>
 #include <iostream>
-#include <ios>
-#include <string>
-#include <iterator>
 #include <stdexcept>
 
+#include "Config.h"
+#include "Search.h"
+
+using Request = std::string;
+using Response = std::vector<std::string>;
+
 int main(int /*argc*/, char** /*argv*/) try {
-  std::locale::global(std::locale(""));
-  std::ios_base::sync_with_stdio(false);
+  Config::init();
 
+  const auto requestHandler = [] (const Request&/*req*/) -> Response {
+    return {"First", "Second"};
+  };
 
-  std::string request;
-
-  do {
-    if (not request.empty()) {
-      // TODO: make service requests, gather and merge
-      std::cout << "\nResults:\n*\n*\n" << std::endl;
-    }
-
-    std::cout << "Search:" << std::endl;
-  } while (std::getline(std::cin, request));
+  Search::interact(requestHandler);
 
 } catch (const std::exception& e) {
   std::cerr << e.what() << std::endl;
