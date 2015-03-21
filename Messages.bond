@@ -1,0 +1,15 @@
+namespace Message
+
+struct Request {
+  // Search request for a specific keyword at a specific point in time
+
+  0: int64 timestamp;
+  1: string keyword;
+}
+
+struct Response {
+  // Search response with multiple -- or none -- matches at a specific point in time
+
+  0: int64 timestamp;
+  1: set<string> matches;
+}

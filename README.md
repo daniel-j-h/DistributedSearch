@@ -20,6 +20,13 @@ See:
 * nanomsg for communication: https://github.com/nanomsg/nanomsg
 * bond for serialization: https://github.com/Microsoft/bond
 
+Note: RapidJSON is required as of now, see: https://github.com/Microsoft/bond/issues/44
+As a quickfix build it from the thirdparty directory then copy the rapidjson/include/rapidjson directory to /usr/local/include/.
+
+Message stubs were generated with bond's gbc using:
+
+    gbc c++ Messages.bond
+
 
 ## Usage:
 

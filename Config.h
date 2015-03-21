@@ -5,8 +5,12 @@
 #include <locale>
 #include <vector>
 #include <string>
+#include <set>
 
 namespace Config {
+
+using Request = std::string;
+using Response = std::set<std::string>;
 
 void init() noexcept {
   std::locale::global(std::locale(""));
