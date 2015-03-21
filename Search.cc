@@ -1,17 +1,17 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "Config.h"
+#include "Common.h"
 #include "Search.h"
 #include "Service.h"
 
 int main(int /*argc*/, char** /*argv*/) try {
-  Config::init();
+  Common::init();
 
   Service::Requester self{"tcp://*:9995"};
 
-  const auto requestHandler = [&self] (const Config::Request&/*req*/) -> Config::Response {
-    return self.query(5/*ts*/,"Cats");
+  const auto requestHandler = [&self] (const Common::Request& req) -> Common::Response {
+    return self.query(5/*ts*/, "Cats");
   };
 
   Search::interact(requestHandler);

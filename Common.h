@@ -1,5 +1,5 @@
-#ifndef SEARCH_CONFIG_H
-#define SEARCH_CONFIG_H
+#ifndef SEARCH_COMMON_H
+#define SEARCH_COMMON_H
 
 #include <ios>
 #include <locale>
@@ -7,7 +7,7 @@
 #include <string>
 #include <set>
 
-namespace Config {
+namespace Common {
 
 using Request = std::string;
 using Response = std::set<std::string>;

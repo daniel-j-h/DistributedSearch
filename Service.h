@@ -3,7 +3,6 @@
 
 #include <cassert>
 #include <cstdint>
-#include <string>
 #include <stdexcept>
 
 #include <nanomsg/nn.h>
@@ -13,7 +12,7 @@
 #include <bond/core/bond.h>
 #include <bond/stream/output_buffer.h>
 
-#include "Config.h"
+#include "Common.h"
 
 #define throw_on(...) \
   if (__VA_ARGS__) throw std::runtime_error{::nn_strerror(::nn_errno())};
@@ -31,7 +30,7 @@ public:
     throw_on(rv < 0);
   }
 
-  Config::Response query(std::uint64_t timestamp, const std::string& keyword) {
+  Common::Response query(std::uint64_t timestamp, const std::string& keyword) {
     Message::Request req;
     req.timestamp = timestamp;
     req.keyword = keyword;

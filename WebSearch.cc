@@ -2,12 +2,12 @@
 #include <string>
 #include <stdexcept>
 
-#include "Config.h"
+#include "Common.h"
 //#include "WebSearch.h"
 #include "Service.h"
 
 int main(int /*argc*/, char** /*argv*/) try {
-  Config::init();
+  Common::init();
 
   Service::Responder self{"tcp://localhost:9995"};
 
