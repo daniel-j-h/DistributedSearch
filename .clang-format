@@ -1,0 +1,11 @@
+BasedOnStyle:  Mozilla
+AlwaysBreakTemplateDeclarations: true
+BreakBeforeTernaryOperators: false
+ColumnLimit:     120
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: Inner
+Cpp11BracedListStyle: true
+Standard:        Cpp11
+BreakBeforeBraces: Attach
+DerivePointerBinding: false
+PointerBindsToType: true

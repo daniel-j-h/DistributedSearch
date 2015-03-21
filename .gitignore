@@ -1,0 +1,9 @@
+*.o
+.*.swp
+
+perf.data
+perf.data.old
+oprofile_data
+cachegrind.out*
+callgrind.out*
+massif.out*
