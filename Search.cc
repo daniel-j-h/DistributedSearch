@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stdexcept>
 
 #include "Common.h"
 #include "Search.h"

@@ -32,7 +32,7 @@ namespace Message
         {
             // keyword
             typedef bond::reflection::FieldTemplate<
-                1,
+                0,
                 bond::reflection::optional_field_modifier,
                 Request,
                 std::string,
@@ -71,7 +71,7 @@ namespace Message
         {
             // matches
             typedef bond::reflection::FieldTemplate<
-                1,
+                0,
                 bond::reflection::optional_field_modifier,
                 Response,
                 std::set<std::string>,

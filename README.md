@@ -1,4 +1,6 @@
-# Communication And Serialization
+# Distributed Search Engine in C++14
+
+Technical walkthrough: https://daniel-j-h.github.io/post/distributed-search-nanomsg-bond/
 
 This project mimics Rob Pike's search example introducing Go's channels:
 
@@ -10,8 +12,8 @@ Instead of using Go and its channels, this project makes use of nanomsg for comm
 
 See:
 
-* https://talks.golang.org/2012/concurrency.slide
-* https://www.youtube.com/watch?v=f6kdp27TYZs
+* https://talks.golang.org/2012/concurrency.slide#42 (slides 42-52)
+* https://www.youtube.com/watch?v=f6kdp27TYZs&t=1721 (starting from 28:40)
 
 If you're interested in nanomsg and bond (or similar technologies, such as ZeroMQ and Cap'n Proto) this is probably the perfect project for you to get started :)
 
@@ -22,13 +24,13 @@ If you're interested in nanomsg and bond (or similar technologies, such as ZeroM
 * bond for serialization: https://github.com/Microsoft/bond
 
 Note: RapidJSON is required as of now, see: https://github.com/Microsoft/bond/issues/44
-As a quickfix build it from the thirdparty directory then copy the rapidjson/include/rapidjson directory to /usr/local/include/.
+As a quickfix build it from bond's thirdparty directory then copy the rapidjson/include/rapidjson directory to /usr/local/include/.
 
 Message stubs were generated with bond's gbc using:
 
     gbc c++ Messages.bond
 
-See also: https://microsoft.github.io/bond/manual/bond\_cpp.html
+See also: https://microsoft.github.io/bond/manual/bond_cpp.html
 
 
 ## Usage:
@@ -45,7 +47,7 @@ Now you'll get WebSearch results. There is also a ImageSearch and a VideoSearch 
 
 By default the services communicate over TCP port 9995. You can change this if you want:
 
-    ./Search "tcp://*5555"
+    ./Search "tcp://*:5555"
     ./WebSearch "tcp://localhost:5555"
 
 

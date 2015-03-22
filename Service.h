@@ -16,7 +16,7 @@
 
 #include "Common.h"
 
-#define throw_on(...)                                                                                                  \
+#define nn_throw_on(...)                                                                                               \
   if (__VA_ARGS__)                                                                                                     \
     throw std::runtime_error{::nn_strerror(::nn_errno())};
 
@@ -26,17 +26,19 @@ class Requester final {
 public:
   Requester(const std::string& address, int timeout = 1000) {
     sock_ = ::nn_socket(AF_SP, NN_SURVEYOR);
-    throw_on(sock_ < 0);
+    nn_throw_on(sock_ < 0);
 
-    auto rv = ::nn_setsockopt(sock_, NN_SURVEYOR, NN_SURVEYOR_DEADLINE, &timeout, sizeof(timeout));
-    throw_on(rv < 0);
+    int rv;
+
+    rv = ::nn_setsockopt(sock_, NN_SURVEYOR, NN_SURVEYOR_DEADLINE, &timeout, sizeof(timeout));
+    nn_throw_on(rv < 0);
 
     rv = ::nn_bind(sock_, address.c_str());
-    throw_on(rv < 0);
+    nn_throw_on(rv < 0);
   }
 
   ~Requester() {
-    auto rv = ::nn_close(sock_);
+    const int rv = ::nn_close(sock_);
     assert(rv == 0);
   }
 
@@ -51,8 +53,9 @@ public:
 
     const auto blob = output.GetBuffer();
 
-    auto rv = ::nn_send(sock_, blob.data(), blob.size(), 0);
-    throw_on(rv < 0);
+    int rv;
+    rv = ::nn_send(sock_, blob.data(), blob.size(), 0);
+    nn_throw_on(rv < 0);
 
     // gather responses
     char* recv_buffer{};
@@ -66,14 +69,17 @@ public:
     // * https://github.com/nanomsg/nanomsg/issues/194
     while ((rv = ::nn_recv(sock_, &recv_buffer, NN_MSG, 0)) >= 0) {
       assert(recv_buffer);
-      std::unique_ptr<char[], decltype(releaser)> defer{recv_buffer, releaser};
+
+      // make sure the receive buffer is cleaned up on all exit paths (e.g. bond may throw)
+      const std::unique_ptr<char[], decltype(releaser)> defer{recv_buffer, releaser};
 
       bond::InputBuffer input{recv_buffer, static_cast<std::uint32_t>(rv)};
-      bond::CompactBinaryReader<bond::InputBuffer> reader(input);
+      bond::CompactBinaryReader<bond::InputBuffer> reader{input};
 
       Message::Response resp;
       Deserialize(reader, resp);
 
+      // this merges all responses, discarding duplicates (set property)
       matches.insert(begin(resp.matches), end(resp.matches));
     }
 
@@ -92,14 +98,14 @@ class Responder final {
 public:
   Responder(const std::string& endpoint) {
     sock_ = ::nn_socket(AF_SP, NN_RESPONDENT);
-    throw_on(sock_ < 0);
+    nn_throw_on(sock_ < 0);
 
-    auto rv = ::nn_connect(sock_, endpoint.c_str());
-    throw_on(rv < 0);
+    const int rv = ::nn_connect(sock_, endpoint.c_str());
+    nn_throw_on(rv < 0);
   }
 
   ~Responder() {
-    auto rv = ::nn_close(sock_);
+    const int rv = ::nn_close(sock_);
     assert(rv == 0);
   }
 
@@ -113,19 +119,22 @@ public:
     for (;;) {
       // get keyword request
       rv = ::nn_recv(sock_, &recv_buffer, NN_MSG, 0);
-      throw_on(rv < 0);
+      nn_throw_on(rv < 0);
 
       assert(recv_buffer);
+
+      // make sure the receive buffer is cleaned up on all exit paths (e.g. bond may throw)
       std::unique_ptr<char[], decltype(releaser)> defer{recv_buffer, releaser};
 
       bond::InputBuffer input{recv_buffer, static_cast<std::uint32_t>(rv)};
-      bond::CompactBinaryReader<bond::InputBuffer> reader(input);
+      bond::CompactBinaryReader<bond::InputBuffer> reader{input};
 
       Message::Request req;
       Deserialize(reader, req);
 
-      // respond with matches
+      // respond with matches; call site provides handler
       const Common::Response matches = handler(Common::Request{req.keyword});
+
       Message::Response resp;
       resp.matches.insert(begin(matches), end(matches));
 
@@ -136,7 +145,7 @@ public:
       const auto blob = output.GetBuffer();
 
       rv = ::nn_send(sock_, blob.data(), blob.size(), 0);
-      throw_on(rv < 0);
+      nn_throw_on(rv < 0);
     }
   }
 
@@ -148,6 +157,6 @@ private:
 };
 }
 
-#undef throw_on
+#undef nn_throw_on
 
 #endif

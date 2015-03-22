@@ -3,11 +3,11 @@ namespace Message
 struct Request {
   // Search request for a specific keyword
 
-  1: string keyword;
+  0: string keyword;
 }
 
 struct Response {
-  // Search response with multiple -- or no -- matches
+  // Search response with matches -- may be empty
 
-  1: set<string> matches;
+  0: set<string> matches;
 }
