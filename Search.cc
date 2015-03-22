@@ -10,11 +10,12 @@ int main(int /*argc*/, char** /*argv*/) try {
 
   Service::Requester self{"tcp://*:9995"};
 
-  const auto requestHandler = [&self] (const Common::Request& req) -> Common::Response {
+  const auto interactionHandler = [&self](const Common::Request& req) -> Common::Response {
+    // query all attached services on interaction
     return self.query(req);
   };
 
-  Search::interact(requestHandler);
+  Search::onInteraction(interactionHandler);
 
 } catch (const std::exception& e) {
   std::cerr << e.what() << std::endl;

@@ -6,7 +6,7 @@
 
 namespace Search {
 template <typename RequestHandler>
-void interact(RequestHandler handler) {
+void onInteraction(RequestHandler handler) {
   std::string request;
   do {
     if (not request.empty()) {

@@ -16,8 +16,9 @@
 
 #include "Common.h"
 
-#define throw_on(...) \
-  if (__VA_ARGS__) throw std::runtime_error{::nn_strerror(::nn_errno())};
+#define throw_on(...)                                                                                                  \
+  if (__VA_ARGS__)                                                                                                     \
+    throw std::runtime_error{::nn_strerror(::nn_errno())};
 
 namespace Service {
 
@@ -55,7 +56,7 @@ public:
 
     // gather responses
     char* recv_buffer{};
-    const auto releaser = [] (void* msg) { ::nn_freemsg(msg); };
+    const auto releaser = [](void* msg) { ::nn_freemsg(msg); };
 
     // merge responses into one, containing all matches
     Common::Response matches;
@@ -106,7 +107,7 @@ public:
   void onRequest(RequestHandler handler) {
     int rv;
     char* recv_buffer{};
-    const auto releaser = [] (void* msg) { ::nn_freemsg(msg); };
+    const auto releaser = [](void* msg) { ::nn_freemsg(msg); };
 
     // eventloop
     for (;;) {

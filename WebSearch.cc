@@ -3,7 +3,6 @@
 #include <stdexcept>
 
 #include "Common.h"
-//#include "WebSearch.h"
 #include "Service.h"
 
 int main(int /*argc*/, char** /*argv*/) try {
@@ -11,8 +10,10 @@ int main(int /*argc*/, char** /*argv*/) try {
 
   Service::Responder self{"tcp://localhost:9995"};
 
-  const auto requestHandler = [&self] (const Common::Request& req) -> Common::Response {
-    return {"Fst", "Snd"};
+  // dummy request handler
+  const auto requestHandler = [&self](const Common::Request& req) -> Common::Response {
+    (void)req; // unused
+    return {"First Web Result", "Second Web Result"};
   };
 
   self.onRequest(requestHandler);
