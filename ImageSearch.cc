@@ -5,10 +5,13 @@
 #include "Common.h"
 #include "Service.h"
 
-int main(int /*argc*/, char** /*argv*/) try {
+int main(int argc, char** argv) try {
   Common::init();
 
-  Service::Responder self{"tcp://localhost:9995"};
+  const auto args = Common::args(argc, argv);
+  const auto endpoint = args.size() == 2 ? args[1] : "tcp://localhost:9995";
+
+  Service::Responder self{endpoint};
 
   // dummy request handler
   const auto requestHandler = [&self](const Common::Request& req) -> Common::Response {

@@ -5,10 +5,13 @@
 #include "Search.h"
 #include "Service.h"
 
-int main(int /*argc*/, char** /*argv*/) try {
+int main(int argc, char** argv) try {
   Common::init();
 
-  Service::Requester self{"tcp://*:9995"};
+  const auto args = Common::args(argc, argv);
+  const auto endpoint = args.size() == 2 ? args[1] : "tcp://*:9995";
+
+  Service::Requester self{endpoint};
 
   const auto interactionHandler = [&self](const Common::Request& req) -> Common::Response {
     // query all attached services on interaction
