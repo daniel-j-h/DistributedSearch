@@ -34,11 +34,9 @@ namespace Message
     
     struct Request
     {
-        int64_t timestamp;
         std::string keyword;
         
         Request()
-          : timestamp()
         {
         }
 
@@ -50,8 +48,7 @@ namespace Message
         
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
         Request(Request&& other)
-          : timestamp(std::move(other.timestamp)),
-            keyword(std::move(other.keyword))
+          : keyword(std::move(other.keyword))
         {
         }
 #endif
@@ -65,7 +62,6 @@ namespace Message
         bool operator==(const Request& other) const
         {
             return true
-                && (timestamp == other.timestamp)
                 && (keyword == other.keyword);
         }
 
@@ -77,7 +73,6 @@ namespace Message
         void swap(Request& other)
         {
             using std::swap;
-            swap(timestamp, other.timestamp);
             swap(keyword, other.keyword);
         }
 
@@ -97,11 +92,9 @@ namespace Message
     
     struct Response
     {
-        int64_t timestamp;
         std::set<std::string> matches;
         
         Response()
-          : timestamp()
         {
         }
 
@@ -113,8 +106,7 @@ namespace Message
         
 #ifndef BOND_NO_CXX11_RVALUE_REFERENCES
         Response(Response&& other)
-          : timestamp(std::move(other.timestamp)),
-            matches(std::move(other.matches))
+          : matches(std::move(other.matches))
         {
         }
 #endif
@@ -128,7 +120,6 @@ namespace Message
         bool operator==(const Response& other) const
         {
             return true
-                && (timestamp == other.timestamp)
                 && (matches == other.matches);
         }
 
@@ -140,7 +131,6 @@ namespace Message
         void swap(Response& other)
         {
             using std::swap;
-            swap(timestamp, other.timestamp);
             swap(matches, other.matches);
         }
 

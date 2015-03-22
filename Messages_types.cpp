@@ -19,18 +19,12 @@ namespace Message
     const bond::Metadata Request::Schema::metadata
         = Request::Schema::GetMetadata();
     
-    const bond::Metadata Request::Schema::s_timestamp_metadata
-        = bond::reflection::MetadataInit("timestamp");
-    
     const bond::Metadata Request::Schema::s_keyword_metadata
         = bond::reflection::MetadataInit("keyword");
 
     
     const bond::Metadata Response::Schema::metadata
         = Response::Schema::GetMetadata();
-    
-    const bond::Metadata Response::Schema::s_timestamp_metadata
-        = bond::reflection::MetadataInit("timestamp");
     
     const bond::Metadata Response::Schema::s_matches_metadata
         = bond::reflection::MetadataInit("matches");

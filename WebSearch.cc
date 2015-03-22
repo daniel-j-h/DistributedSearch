@@ -11,8 +11,11 @@ int main(int /*argc*/, char** /*argv*/) try {
 
   Service::Responder self{"tcp://localhost:9995"};
 
-  for (std::string line; std::getline(std::cin, line);)
-    std::cout << "OK" << std::endl;// keepalive
+  const auto requestHandler = [&self] (const Common::Request& req) -> Common::Response {
+    return {"Fst", "Snd"};
+  };
+
+  self.onRequest(requestHandler);
 
 } catch (const std::exception& e) {
   std::cerr << e.what() << std::endl;

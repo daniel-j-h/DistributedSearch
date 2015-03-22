@@ -26,21 +26,10 @@ namespace Message
 
         static const bond::Metadata metadata;
         
-        private: static const bond::Metadata s_timestamp_metadata;
         private: static const bond::Metadata s_keyword_metadata;
 
         public: struct var
         {
-            // timestamp
-            typedef bond::reflection::FieldTemplate<
-                0,
-                bond::reflection::optional_field_modifier,
-                Request,
-                int64_t,
-                &Request::timestamp,
-                &s_timestamp_metadata
-            > timestamp;
-        
             // keyword
             typedef bond::reflection::FieldTemplate<
                 1,
@@ -54,9 +43,8 @@ namespace Message
 
         private: typedef boost::mpl::list<> fields0;
         private: typedef boost::mpl::push_front<fields0, var::keyword>::type fields1;
-        private: typedef boost::mpl::push_front<fields1, var::timestamp>::type fields2;
 
-        public: typedef fields2::type fields;
+        public: typedef fields1::type fields;
         
         
         static bond::Metadata GetMetadata()
@@ -77,21 +65,10 @@ namespace Message
 
         static const bond::Metadata metadata;
         
-        private: static const bond::Metadata s_timestamp_metadata;
         private: static const bond::Metadata s_matches_metadata;
 
         public: struct var
         {
-            // timestamp
-            typedef bond::reflection::FieldTemplate<
-                0,
-                bond::reflection::optional_field_modifier,
-                Response,
-                int64_t,
-                &Response::timestamp,
-                &s_timestamp_metadata
-            > timestamp;
-        
             // matches
             typedef bond::reflection::FieldTemplate<
                 1,
@@ -105,9 +82,8 @@ namespace Message
 
         private: typedef boost::mpl::list<> fields0;
         private: typedef boost::mpl::push_front<fields0, var::matches>::type fields1;
-        private: typedef boost::mpl::push_front<fields1, var::timestamp>::type fields2;
 
-        public: typedef fields2::type fields;
+        public: typedef fields1::type fields;
         
         
         static bond::Metadata GetMetadata()

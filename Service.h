@@ -4,6 +4,8 @@
 #include <cassert>
 #include <cstdint>
 #include <stdexcept>
+#include <memory>
+#include <iterator>
 
 #include <nanomsg/nn.h>
 #include <nanomsg/survey.h>
@@ -21,23 +23,29 @@ namespace Service {
 
 class Requester final {
 public:
-  // TODO: setsockopt deadline, default 1s
-  Requester(const std::string& address) {
+  Requester(const std::string& address, int timeout = 1000) {
     sock_ = ::nn_socket(AF_SP, NN_SURVEYOR);
     throw_on(sock_ < 0);
 
-    auto rv = ::nn_bind(sock_, address.c_str());
+    auto rv = ::nn_setsockopt(sock_, NN_SURVEYOR, NN_SURVEYOR_DEADLINE, &timeout, sizeof(timeout));
+    throw_on(rv < 0);
+
+    rv = ::nn_bind(sock_, address.c_str());
     throw_on(rv < 0);
   }
 
-  Common::Response query(std::uint64_t timestamp, const std::string& keyword) {
+  ~Requester() {
+    auto rv = ::nn_close(sock_);
+    assert(rv == 0);
+  }
+
+  Common::Response query(const std::string& keyword) {
+    // make request
     Message::Request req;
-    req.timestamp = timestamp;
     req.keyword = keyword;
 
     bond::OutputBuffer output;
     bond::CompactBinaryWriter<bond::OutputBuffer> writer{output};
-
     Serialize(req, writer);
 
     const auto blob = output.GetBuffer();
@@ -45,12 +53,30 @@ public:
     auto rv = ::nn_send(sock_, blob.data(), blob.size(), 0);
     throw_on(rv < 0);
 
-    return {"CatCat", "DogDog"};
-  }
+    // gather responses
+    char* recv_buffer{};
+    const auto releaser = [] (void* msg) { ::nn_freemsg(msg); };
 
-  ~Requester() {
-    auto rv = ::nn_close(sock_);
-    assert(rv == 0);
+    // merge responses into one, containing all matches
+    Common::Response matches;
+
+    // Timeout is currently signaled by errno == EFSM instead of ETIMEDOUT, see these issues:
+    // * http://www.freelists.org/post/nanomsg/Expired-nn-survey-deadline-error-mismatch
+    // * https://github.com/nanomsg/nanomsg/issues/194
+    while ((rv = ::nn_recv(sock_, &recv_buffer, NN_MSG, 0)) >= 0) {
+      assert(recv_buffer);
+      std::unique_ptr<char[], decltype(releaser)> defer{recv_buffer, releaser};
+
+      bond::InputBuffer input{recv_buffer, static_cast<std::uint32_t>(rv)};
+      bond::CompactBinaryReader<bond::InputBuffer> reader(input);
+
+      Message::Response resp;
+      Deserialize(reader, resp);
+
+      matches.insert(begin(resp.matches), end(resp.matches));
+    }
+
+    return matches;
   }
 
   Requester(const Requester&) = delete;
@@ -74,6 +100,43 @@ public:
   ~Responder() {
     auto rv = ::nn_close(sock_);
     assert(rv == 0);
+  }
+
+  template <typename RequestHandler>
+  void onRequest(RequestHandler handler) {
+    int rv;
+    char* recv_buffer{};
+    const auto releaser = [] (void* msg) { ::nn_freemsg(msg); };
+
+    // eventloop
+    for (;;) {
+      // get keyword request
+      rv = ::nn_recv(sock_, &recv_buffer, NN_MSG, 0);
+      throw_on(rv < 0);
+
+      assert(recv_buffer);
+      std::unique_ptr<char[], decltype(releaser)> defer{recv_buffer, releaser};
+
+      bond::InputBuffer input{recv_buffer, static_cast<std::uint32_t>(rv)};
+      bond::CompactBinaryReader<bond::InputBuffer> reader(input);
+
+      Message::Request req;
+      Deserialize(reader, req);
+
+      // respond with matches
+      const Common::Response matches = handler(Common::Request{req.keyword});
+      Message::Response resp;
+      resp.matches.insert(begin(matches), end(matches));
+
+      bond::OutputBuffer output;
+      bond::CompactBinaryWriter<bond::OutputBuffer> writer{output};
+      Serialize(resp, writer);
+
+      const auto blob = output.GetBuffer();
+
+      rv = ::nn_send(sock_, blob.data(), blob.size(), 0);
+      throw_on(rv < 0);
+    }
   }
 
   Responder(const Responder&) = delete;
