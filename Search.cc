@@ -1,8 +1,12 @@
 #include <iostream>
+#include <string>
 
 #include "Common.h"
-#include "Search.h"
 #include "Service.h"
+
+
+void onInteraction(Common::RequestHandler);
+
 
 int main(int argc, char** argv) try {
   Common::init();
@@ -12,13 +16,28 @@ int main(int argc, char** argv) try {
 
   Service::Requester self{endpoint};
 
-  const auto interactionHandler = [&self](const Common::Request& req) -> Common::Response {
+  const auto handler = [&self](const Common::Request& req) -> Common::Response {
     // query all attached services on interaction
     return self.query(req);
   };
 
-  Search::onInteraction(interactionHandler);
+  onInteraction(handler);
 
 } catch (const std::exception& e) {
   std::cerr << e.what() << std::endl;
+}
+
+
+void onInteraction(Common::RequestHandler handler) {
+  std::string request;
+  do {
+    if (!request.empty()) {
+      const auto responses = handler(request);
+
+      std::cout << "\nResults>\n";
+      for (auto&& resp : responses)
+        std::cout << " * " << resp << '\n';
+    }
+    std::cout << "\nSearch>" << std::endl;
+  } while (std::getline(std::cin, request));
 }

@@ -6,18 +6,20 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <functional>
 
 namespace Common {
 
 using Request = std::string;
 using Response = std::set<std::string>;
+using RequestHandler = std::function<Response(Request)>;
 
-void init() noexcept {
+inline void init() noexcept {
   std::locale::global(std::locale(""));
   std::ios_base::sync_with_stdio(false);
 }
 
-std::vector<std::string> args(int argc, char** argv) {
+inline std::vector<std::string> args(int argc, char** argv) {
   return {argv, argv + argc};
 }
 
