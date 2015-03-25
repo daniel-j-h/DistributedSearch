@@ -124,7 +124,7 @@ public:
       assert(recv_buffer);
 
       // make sure the receive buffer is cleaned up on all exit paths (e.g. bond may throw)
-      std::unique_ptr<char[], decltype(releaser)> defer{recv_buffer, releaser};
+      const std::unique_ptr<char[], decltype(releaser)> defer{recv_buffer, releaser};
 
       bond::InputBuffer input{recv_buffer, static_cast<std::uint32_t>(rv)};
       bond::CompactBinaryReader<bond::InputBuffer> reader{input};
