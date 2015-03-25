@@ -5,7 +5,7 @@
 #include "Service.h"
 
 
-void onInteraction(Common::RequestHandler);
+static void onInteraction(Common::RequestHandler);
 
 
 int main(int argc, char** argv) try {
@@ -28,7 +28,7 @@ int main(int argc, char** argv) try {
 }
 
 
-void onInteraction(Common::RequestHandler handler) {
+static void onInteraction(Common::RequestHandler handler) {
   std::string request;
   do {
     if (!request.empty()) {

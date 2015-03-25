@@ -2,6 +2,7 @@ Search
 WebSearch
 ImageSearch
 VideoSearch
+RecursiveSearch
 
 *.o
 .*.swp

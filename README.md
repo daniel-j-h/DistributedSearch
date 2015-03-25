@@ -47,14 +47,25 @@ Now you'll get WebSearch results. There is also a ImageSearch and a VideoSearch 
 
 By default the services communicate over TCP port 9995. You can change this if you want:
 
-    ./Search "tcp://*:5555"
-    ./WebSearch "tcp://localhost:5555"
+    ./Search "tcp://*:9555"
+    ./WebSearch "tcp://localhost:9555"
 
 
 Or using IPC:
 
     ./Search "ipc:///tmp/search.ipc"
     ./WebSearch "ipc:///tmp/search.ipc"
+
+
+There is a RecursiveSearch service available, showing an example of how to build a service tree:
+
+    ./Search "tcp://*:9995"
+    ./RecursiveSearch "tcp://*:9996" "tcp://localhost:9995"
+    ./WebSearch "tcp://localhost:9996"
+
+With this setup, ./Search is the tree's root, with ./RecursiveSearch attached to it and ./WebSearch attached to the ./RecursiveSearch leaf. Attaching more services is possible on each layer of the tree. Just attach them to the subtree's specific root-service.
+
+Note: if you try the recursive example on a single machine, you have to change the port for each layer, otherwise there would be no way to distinguish the root from internal tree nodes.
 
 
 ## License
